@@ -40,6 +40,8 @@
 (require 'org-agenda)
 
 
+(defvar org-alert-fade-time 10)
+
 (defvar org-alert-interval 300
   "Interval in seconds to recheck and display deadlines.")
 
@@ -65,10 +67,10 @@
   "Return the current org agenda as text only."
   (with-temp-buffer
     (let ((org-agenda-sticky nil)
-	  (org-agenda-buffer-tmp-name (buffer-name)))
+      (org-agenda-buffer-tmp-name (buffer-name)))
       (ignore-errors (org-agenda-list 1))
       (org-alert--unique-headlines org-alert-headline-regexp
-				   (buffer-substring-no-properties (point-min) (point-max))))))
+                   (buffer-substring-no-properties (point-min) (point-max))))))
 
 
 (defun org-alert--headline-complete? (headline)
@@ -94,13 +96,14 @@
     (save-window-excursion
       (save-excursion
         (save-restriction
-          (let ((active (org-alert--filter-active (org-alert--get-headlines))))
+          (let ((active (org-alert--filter-active (org-alert--get-headlines)))
+                (alert-fade-time org-alert-fade-time))
             (dolist (dl (org-alert--strip-states active))
               (alert dl :title org-alert-notification-title))))))
     (when (get-buffer org-agenda-buffer-name)
       (ignore-errors
-    	(with-current-buffer org-agenda-buffer-name
-    	  (org-agenda-redo t))))))
+        (with-current-buffer org-agenda-buffer-name
+          (org-agenda-redo t))))))
 
 
 (defun org-alert-enable ()
@@ -115,7 +118,7 @@
   (interactive)
   (dolist (timer timer-list)
     (if (eq (elt timer 5) 'org-alert-check)
-	(cancel-timer timer))))
+    (cancel-timer timer))))
 
 
 
